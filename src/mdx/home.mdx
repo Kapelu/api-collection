@@ -1,0 +1,217 @@
+import { Note } from '@/components/ui/Note'
+import { Title } from '@/components/ui/Title'
+import { Divider } from '@/components/ui/Divider'
+
+Es básicamente una página donde agrego esas pequeñas aplicaciones que he creado a lo largo de este camino de desarrollo web. Todas ellas, primeramente, fueron creadas puramente con `HTML` y `CSS`. A medida que fueron avanzando mis conocimientos, pasé a`NextJs` con `React`.
+
+Para este proyecto usé como base las siguientes tecnologías:
+
+* Next.js
+* React
+* Tailwind
+* TypeScript
+
+<Note>
+Este texto está escrito en un archivo `markdown` convertido a `mdx`. La razón principal de convertirlo fue que este último me permitía darle estilos y agregar componentes de `React`.
+</Note>
+
+Al igual que de la misma forma me permite renderizar codigos como:
+
+```tsx
+export default function Home() {
+  return <h1>Hello</h1>
+}
+```
+<br />
+<Divider pattern=".~°~._" />
+
+<Title title="The Simposon API" italic />
+
+Es un **Client Component** de Next.js encargado de gestionar toda la interacción del usuario con el listado de personajes de Los Simpson.
+
+---
+
+### Arquitectura del componente
+
+Este componente sigue una separación clara de responsabilidades:
+
+* **SimpsonsClient:** controla la lógica, el estado y los eventos.
+* **SimpsonCard:** presenta la información resumida de cada personaje.
+* **SimpsonModal:** muestra la información detallada del personaje seleccionado.
+* **getSimpsonById:** obtiene los datos desde la fuente correspondiente.
+
+Esta organización facilita el mantenimiento del código, mejora la reutilización de componentes y permite que cada uno tenga una única responsabilidad dentro de la aplicación.
+
+---
+
+### Flujo completo de funcionamiento
+
+El comportamiento del componente puede resumirse en el siguiente flujo:
+
+1. El servidor obtiene la lista de personajes.
+2. La lista se envía al componente `SimpsonsClient`.
+3. Se renderiza una tarjeta (`SimpsonCard`) por cada personaje.
+4. El usuario hace clic sobre una tarjeta.
+5. Se ejecuta `handleOpen`.
+6. Se solicita la información detallada mediante `getSimpsonById`.
+7. El estado `selected` se actualiza con los nuevos datos.
+8. React vuelve a renderizar el componente.
+9. `SimpsonModal` recibe el personaje seleccionado y muestra toda su información.
+10. Al cerrar el modal, el estado vuelve a `null` y el modal desaparece.
+
+Mientras que el servidor obtiene la lista inicial de personajes y la envía como propiedad (`props`), este componente se ocupa de renderizar las tarjetas, manejar los eventos de clic y mostrar la información detallada de cada personaje dentro de un modal.
+
+La directiva:
+
+```tsx
+'use client'
+```
+
+indica que este componente se ejecutará en el navegador. Esto es necesario porque utiliza **Hooks de React** (`useState`) y responde a eventos del usuario, funcionalidades que únicamente pueden ejecutarse del lado del cliente.
+
+---
+
+### Recepción de propiedades
+
+El componente recibe un arreglo de personajes mediante la propiedad `simpsons`.
+
+```tsx
+type Props = {
+  simpsons: Simpson[]
+}
+```
+
+Esto significa que el componente no realiza la petición inicial de datos, sino que recibe la información ya preparada desde un **Server Component**, aprovechando el renderizado del servidor para mejorar el rendimiento y el SEO.
+
+---
+
+### Estado del componente
+
+Para controlar el personaje seleccionado se utiliza el Hook `useState`.
+
+```tsx
+const [selected, setSelected] = useState<SimpsonDetail | null>(null)
+```
+
+Este estado almacena dos posibles valores:
+
+* `null`: cuando no existe ningún personaje seleccionado y el modal permanece cerrado.
+* `SimpsonDetail`: cuando se obtiene la información completa de un personaje y debe mostrarse el modal.
+
+Cada vez que cambia este estado, React vuelve a renderizar el componente para reflejar la nueva información en pantalla.
+
+---
+
+### Obtención del detalle del personaje
+
+Cuando el usuario hace clic sobre una tarjeta se ejecuta la función `handleOpen`.
+
+```tsx
+const handleOpen = async (id: number) => {
+  const data = await getSimpsonById(id)
+  setSelected(data)
+}
+```
+
+Su funcionamiento es el siguiente:
+
+1. Recibe el identificador del personaje.
+2. Llama a `getSimpsonById(id)`, una función asíncrona que obtiene toda la información disponible de ese personaje.
+3. Espera la respuesta utilizando `await`.
+4. Guarda el resultado en el estado `selected`.
+
+Al actualizar el estado, React renderiza nuevamente el componente y el modal recibe automáticamente la información del personaje seleccionado.
+
+---
+
+### Renderizado de las tarjetas
+
+El listado de personajes se construye recorriendo el arreglo recibido mediante `map`.
+
+```tsx
+{simpsons.map((s) => (
+  <div key={s.id} onClick={() => handleOpen(s.id)}>
+    <SimpsonCard simpson={s} />
+  </div>
+))}
+```
+
+Cada elemento del arreglo genera una tarjeta independiente.
+
+En cada iteración:
+
+* Se utiliza `key={s.id}` para que React pueda identificar correctamente cada elemento de la lista.
+* Se asigna un evento `onClick` que ejecuta `handleOpen`.
+* Se renderiza el componente `SimpsonCard`, responsable únicamente de mostrar la información básica del personaje.
+
+De esta manera, `SimpsonsClient` delega la presentación visual de cada tarjeta a un componente independiente, manteniendo una arquitectura modular y fácil de mantener.
+
+
+---
+
+### Modal del personaje
+
+Al final del componente se renderiza siempre el modal.
+
+```tsx
+<SimpsonModal
+  simpson={selected}
+  onClose={() => setSelected(null)}
+/>
+```
+
+El modal recibe dos propiedades:
+
+* `simpson`: contiene el personaje seleccionado.
+* `onClose`: función que restablece el estado a `null`.
+
+Cuando el usuario cierra el modal, se ejecuta:
+
+```tsx
+setSelected(null)
+```
+
+Al volver el estado a `null`, el modal deja de mostrar información y desaparece de la interfaz.
+
+---
+
+### Grid responsivo
+
+Las tarjetas se muestran dentro de un contenedor con clases de Tailwind CSS.
+
+```tsx
+<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+```
+
+La distribución cambia automáticamente según el tamaño de la pantalla:
+
+* **Pantallas pequeñas:** una columna.
+* **sm:** dos columnas.
+* **lg:** tres columnas.
+* **xl:** cuatro columnas.
+
+Esto permite que la interfaz se adapte correctamente tanto a dispositivos móviles como a pantallas de escritorio.
+
+<br />
+<Divider pattern=".~°~._" />
+
+<Title title="ToDo List" italic />
+
+Esta aplicación es un **Todo List moderno construido con Next.js (App Router) + React Client Components**, utilizando:
+
+- Estado local con `useState`
+- Persistencia con `localStorage`
+- Componentes reutilizables (TodoForm, TodoItem)
+- UI basada en Tailwind CSS con design system (Solarized)
+- Lógica de edición, eliminación, completado y countdown
+
+---
+### Rendimiento
+* Render eficiente con map + keys
+* Updates mínimos por item
+### Persistencia
+* localStorage como base de datos local
+### UI/UX
+* Design system Solarized
+* Glassmorphism
+* Responsive layout

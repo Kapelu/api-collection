@@ -1,0 +1,207 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Scroll */
+::-webkit-scrollbar {
+  width: 0px;
+}
+
+/* Solarized Light (default) */
+:root {
+  /* Base colors */
+  --background: #fdf6e3; /* base3 */
+  --foreground: #657b83; /* base00 */
+
+  /* Surface */
+  --surface: #eee8d5; /* base2 */
+  --surface-2: #e4dcc6;
+
+  /* Borders */
+  --border: #93a1a1; /* base1 */
+
+  /* Text hierarchy */
+  --muted: #93a1a1; /* base1 */
+  --heading: #586e75; /* base01 */
+
+  /* Accent colors */
+  --primary: #268bd2; /* blue */
+  --secondary: #2aa198; /* cyan */
+  --success: #859900; /* green */
+  --warning: #b58900; /* yellow */
+  --danger: #dc322f; /* red */
+  --magenta: #d33682;
+  --violet: #6c71c4;
+  --orange: #cb4b16;
+
+  --mobile-header-height: 4rem;
+  --section-offset: calc(var(--mobile-header-height)+1px);
+}
+
+/* Solarized Dark */
+html.dark {
+  --background: #002b36;
+  --foreground: #839496;
+  --surface: #073642;
+  --surface-2: #0b3f4c;
+  --border: #586e75;
+  --muted: #657b83;
+  --heading: #eee8d5;
+
+  --primary: #268bd2;
+  --secondary: #2aa198;
+  --success: #859900;
+  --warning: #b58900;
+  --danger: #dc322f;
+  --magenta: #d33682;
+  --violet: #6c71c4;
+  --orange: #cb4b16;
+}
+
+@theme {
+  --font-gentium: var(--font-gentium);
+}
+
+@theme inline {
+  /* Base */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  /* Extra colors */
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+
+  --color-muted: var(--muted);
+  --color-heading: var(--heading);
+
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+
+  --color-orange: var(--orange);
+  --color-violet: var(--violet);
+  --color-magenta: var(--magenta);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* Base*/
+html {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-gentium);
+}
+
+@layer components {
+  /* Loader */
+  .loader-simpson {
+    @apply relative inline-block rounded-full;
+
+    width: var(--loader-size);
+    height: var(--loader-size);
+
+    border: 3px solid;
+    border-color: var(--loader-color-1) var(--loader-color-1) transparent
+      transparent;
+
+    box-sizing: border-box;
+    animation: loader-rotation 1s linear infinite;
+  }
+
+  .loader-simpson::before,
+  .loader-simpson::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    border: 3px solid;
+    border-radius: 9999px;
+    box-sizing: border-box;
+    transform-origin: center;
+  }
+
+  .loader-simpson::after {
+    width: calc(var(--loader-size) - 8px);
+    height: calc(var(--loader-size) - 8px);
+    border-color: transparent transparent var(--loader-color-2)
+      var(--loader-color-2);
+    animation: loader-rotation-back 0.5s linear infinite;
+  }
+
+  .loader-simpson::before {
+    width: calc(var(--loader-size) - 16px);
+    height: calc(var(--loader-size) - 16px);
+    border-color: var(--loader-color-1) var(--loader-color-1) transparent
+      transparent;
+    animation: loader-rotation 1.5s linear infinite;
+  }
+
+  /* Imagen */
+  .simpson-image-hover {
+    transition:
+      filter 0.3s ease,
+      mask-image 0.3s ease,
+      transform 0.3s ease;
+  }
+
+  
+}
+
+@keyframes loader-rotation {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes loader-rotation-back {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+/* rehype-pretty-code / Shiki */
+
+pre[data-theme] {
+  overflow-x: auto;
+  border-radius: 0.75rem;
+  padding: 1rem;
+
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+/* Tema claro */
+code[data-theme*='light'],
+code[data-theme*='light'] span {
+  color: var(--shiki-light);
+}
+
+/* Tema oscuro */
+.dark code[data-theme*='dark'],
+.dark code[data-theme*='dark'] span {
+  color: var(--shiki-dark);
+}
+
+/* Evita que el inline code rompa los bloques */
+pre code {
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+pre code span {
+  font-style: inherit !important;
+  font-weight: inherit !important;
+}
