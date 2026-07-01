@@ -1,6 +1,21 @@
 import type { NextConfig } from 'next'
 import createMDX from '@next/mdx'
 
+const withMDX = createMDX({
+  extension: /\.(md|mdx)$/,
+})
+
+const nextConfig: NextConfig = {
+  reactCompiler: true,
+  pageExtensions: ['ts', 'tsx', 'md', 'mdx'],
+}
+
+export default withMDX(nextConfig)
+
+{
+  /*import type { NextConfig } from 'next'
+import createMDX from '@next/mdx'
+
 import remarkGfm from 'remark-gfm'
 import rehypePrettyCode from 'rehype-pretty-code'
 
@@ -24,7 +39,7 @@ const withMDX = createMDX({
 })
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  
   reactCompiler: true,
 
   pageExtensions: ['ts', 'tsx', 'md', 'mdx'],
@@ -39,4 +54,5 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default withMDX(nextConfig)
+export default withMDX(nextConfig) */
+}
