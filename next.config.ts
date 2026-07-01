@@ -23,6 +23,15 @@ const withMDX = createMDX({
 const nextConfig: NextConfig = {
   reactCompiler: true,
   pageExtensions: ['ts', 'tsx', 'md', 'mdx'],
+
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'cdn.thesimpsonsapi.com',
+      },
+    ],
+  },
 }
 
 export default withMDX(nextConfig)
