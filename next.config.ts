@@ -3,6 +3,21 @@ import createMDX from '@next/mdx'
 
 const withMDX = createMDX({
   extension: /\.(md|mdx)$/,
+  options: {
+    remarkPlugins: ['remark-gfm'],
+    rehypePlugins: [
+      [
+        'rehype-pretty-code',
+        {
+          theme: {
+            dark: 'solarized-dark',
+            light: 'solarized-light',
+          },
+          keepBackground: false,
+        },
+      ],
+    ],
+  },
 })
 
 const nextConfig: NextConfig = {
@@ -11,7 +26,6 @@ const nextConfig: NextConfig = {
 }
 
 export default withMDX(nextConfig)
-
 {
   /*import type { NextConfig } from 'next'
 import createMDX from '@next/mdx'
