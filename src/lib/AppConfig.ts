@@ -1,10 +1,10 @@
 export const AppConfig = {
-  site_name: 'Portafolio | Daniel Calderon',
+  site_name: 'API-Kapelu | Daniel Calderon',
 
   title: 'Daniel Calderon | Full Stack Developer',
 
   description:
-    'Portafolio profesional de Daniel Calderón, desarrollador Frontend especializado en React, Next.js y TypeScript.',
+    'Colección de Api de Daniel Calderón, desarrollador Frontend especializado en React, Next.js y TypeScript.',
 
   url: 'https://kapelu.vercel.app',
 
@@ -23,6 +23,8 @@ export const AppConfig = {
     'Full Stack Developer',
     'Desarrollador Full Stack',
     'Frontend Developer',
+    'api simpsons',
+    'api',
     'Backend Developer',
     'Web Developer',
     'React',
@@ -31,13 +33,8 @@ export const AppConfig = {
     'JavaScript',
     'Tailwind CSS',
     'Node.js',
-    'Express',
-    'MongoDB',
-    'PostgreSQL',
     'Desarrollo Web',
     'Programación',
     'Blog de Programación',
-    'Linux',
-    'Script Bash',
   ],
 }
