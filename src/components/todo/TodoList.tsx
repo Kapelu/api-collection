@@ -1,81 +1,82 @@
+// components/TodoList.tsx
+
 'use client'
 
-import { Todo } from '@/data/todo'
-import { useEffect, useState } from 'react'
-import TodoForm from './TodoForm'
+import { sortTodos, Todo } from '@/lib/todo'
 import TodoItem from './TodoItem'
 
-export default function TodoList() {
-  const [todos, setTodos] = useState<Todo[]>([])
+interface TodoListProps {
+  todos: Todo[]
+  onToggle(id: string): void
+  onDelete(id: string): void
+  onEdit(todo: Todo): void
+}
 
-  useEffect(() => {
-    const saved = localStorage.getItem('todos')
+export default function TodoList({
+  todos,
+  onToggle,
+  onDelete,
+  onEdit,
+}: TodoListProps) {
+  const orderedTodos = sortTodos(todos)
 
-    if (saved) {
-      try {
-        setTodos(JSON.parse(saved))
-      } catch {
-        setTodos([])
-      }
-    }
-  }, [])
+  if (orderedTodos.length === 0) {
+    return (
+      <div className='rounded-xl border border-[#586e75] bg-[#073642] p-10 text-center text-[#93a1a1]'>
+        <p className='text-lg font-medium'>No hay tareas registradas.</p>
 
-  useEffect(() => {
-    localStorage.setItem('todos', JSON.stringify(todos))
-  }, [todos])
-
-  const addTodo = (text: string, time: string) => {
-    setTodos((prev) => [
-      ...prev,
-      {
-        id: crypto.randomUUID(),
-        text,
-        time,
-        completed: false,
-      },
-    ])
-  }
-
-  const toggleTodo = (id: string) => {
-    setTodos((prev) =>
-      prev.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo,
-      ),
+        <p className='mt-2 text-sm'>Agrega una nueva tarea para comenzar.</p>
+      </div>
     )
   }
 
-  const deleteTodo = (id: string) => {
-    setTodos((prev) => prev.filter((todo) => todo.id !== id))
-  }
+  const pending = orderedTodos.filter((todo) => todo.status === 'pending')
 
-  // actualiza time
-  const editTodo = (id: string, newText: string, newTime: string) => {
-    setTodos((prev) =>
-      prev.map((todo) =>
-        todo.id === id ? { ...todo, text: newText, time: newTime } : todo,
-      ),
-    )
-  }
+  const completed = orderedTodos.filter((todo) => todo.status === 'completed')
 
   return (
-    <div className='mx-auto flex max-w-3xl flex-col items-center'>
-      <TodoForm onAdd={addTodo} />
+    <div className='space-y-8'>
+      <section>
+        <h2 className='mb-4 text-xl font-bold text-[#b58900]'>
+          Pendientes ({pending.length})
+        </h2>
 
-      <div className='w-full space-y-4'>
-        {todos.length === 0 ? (
-          <p className='text-center text-muted'>No hay tareas aún</p>
-        ) : (
-          todos.map((todo) => (
+        <div className='space-y-4'>
+          {pending.map((todo) => (
             <TodoItem
               key={todo.id}
               todo={todo}
-              onToggle={toggleTodo}
-              onDelete={deleteTodo}
-              onEdit={editTodo}
+              onToggle={onToggle}
+              onDelete={onDelete}
+              onEdit={onEdit}
             />
-          ))
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <h2 className='mb-4 text-xl font-bold text-[#859900]'>
+          Completadas ({completed.length})
+        </h2>
+
+        {completed.length === 0 ? (
+          <div className='rounded-xl border border-dashed border-[#586e75] p-6 text-center text-[#657b83]'>
+            Todavía no completaste ninguna tarea.
+          </div>
+        ) : (
+          <div className='space-y-4'>
+            {completed.map((todo) => (
+              <TodoItem
+                key={todo.id}
+                todo={todo}
+                onToggle={onToggle}
+                onDelete={onDelete}
+                onEdit={onEdit}
+              />
+            ))}
+          </div>
         )}
-      </div>
+      </section>
     </div>
   )
 }
