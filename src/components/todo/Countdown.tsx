@@ -2,8 +2,8 @@
 
 'use client'
 
+import { timeRemaining } from '@/data/todo'
 import { useEffect, useState } from 'react'
-import { timeRemaining } from '@/lib/todo'
 
 interface CountdownProps {
   dueDate: string

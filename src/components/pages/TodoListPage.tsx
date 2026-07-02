@@ -1,13 +1,15 @@
 'use client'
 
+import { useState } from 'react'
+
 import { Container } from '@/components/layout/Container'
-import Hero from '../layout/Hero'
 import HeaderApi from '../layout/HeaderApi'
+import Hero from '../layout/Hero'
 
 import TodoForm from '@/components/todo/TodoForm'
 import TodoList from '@/components/todo/TodoList'
 
-import { Todo } from '@/lib/todo'
+import { Todo } from '@/data/todo'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 
 export default function TodoListPage() {
@@ -17,8 +19,18 @@ export default function TodoListPage() {
     isLoaded,
   } = useLocalStorage<Todo[]>('todos', [])
 
+  const [editingTodo, setEditingTodo] = useState<Todo | null>(null)
+
   function handleAddTodo(todo: Todo) {
     setTodos((prev) => [...prev, todo])
+  }
+
+  function handleUpdateTodo(updatedTodo: Todo) {
+    setTodos((prev) =>
+      prev.map((todo) => (todo.id === updatedTodo.id ? updatedTodo : todo)),
+    )
+
+    setEditingTodo(null)
   }
 
   function handleToggle(id: string) {
@@ -45,12 +57,23 @@ export default function TodoListPage() {
 
   function handleDelete(id: string) {
     setTodos((prev) => prev.filter((todo) => todo.id !== id))
+
+    if (editingTodo?.id === id) {
+      setEditingTodo(null)
+    }
   }
 
-  function handleEdit(updatedTodo: Todo) {
-    setTodos((prev) =>
-      prev.map((todo) => (todo.id === updatedTodo.id ? updatedTodo : todo)),
-    )
+  function handleEdit(todo: Todo) {
+    setEditingTodo(todo)
+
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    })
+  }
+
+  function handleCancelEdit() {
+    setEditingTodo(null)
   }
 
   if (!isLoaded) {
@@ -71,9 +94,7 @@ export default function TodoListPage() {
               url='https://github.com/Kapelu/api_collection/blob/main/src/components/pages/TodoListPage.tsx'
             />
 
-            <div className='py-20 text-center text-muted-foreground'>
-              Cargando tareas...
-            </div>
+            <div className='py-16 text-center'>Cargando tareas...</div>
           </div>
         </section>
       </Container>
@@ -97,7 +118,12 @@ export default function TodoListPage() {
             url='https://github.com/Kapelu/api_collection/blob/main/src/components/pages/TodoListPage.tsx'
           />
 
-          <TodoForm onAdd={handleAddTodo} />
+          <TodoForm
+            editingTodo={editingTodo}
+            onAdd={handleAddTodo}
+            onUpdate={handleUpdateTodo}
+            onCancelEdit={handleCancelEdit}
+          />
 
           <TodoList
             todos={todos}

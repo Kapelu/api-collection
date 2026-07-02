@@ -1,12 +1,14 @@
-// components/TodoForm.tsx
-
 'use client'
 
-import { FormEvent, useMemo, useState } from 'react'
-import { createTodo, Todo } from '@/lib/todo'
+import { createTodo, Todo, TodoPriority } from '@/data/todo'
+import { FormEvent, useEffect, useState } from 'react'
+import { Button } from '../ui/Button'
 
 interface TodoFormProps {
+  editingTodo: Todo | null
   onAdd(todo: Todo): void
+  onUpdate(todo: Todo): void
+  onCancelEdit(): void
 }
 
 function getDefaultDateTime(): string {
@@ -19,18 +21,47 @@ function getDefaultDateTime(): string {
   return local.toISOString().slice(0, 16)
 }
 
-export default function TodoForm({ onAdd }: TodoFormProps) {
-  const initialDate = useMemo(getDefaultDateTime, [])
-
+export default function TodoForm({
+  editingTodo,
+  onAdd,
+  onUpdate,
+  onCancelEdit,
+}: TodoFormProps) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [dueDate, setDueDate] = useState(initialDate)
-  const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium')
+  const [dueDate, setDueDate] = useState(getDefaultDateTime())
+  const [priority, setPriority] = useState<TodoPriority>('medium')
+
+  useEffect(() => {
+    if (!editingTodo) {
+      setTitle('')
+      setDescription('')
+      setPriority('medium')
+      setDueDate(getDefaultDateTime())
+      return
+    }
+
+    setTitle(editingTodo.title)
+    setDescription(editingTodo.description)
+    setDueDate(editingTodo.dueDate)
+    setPriority(editingTodo.priority)
+  }, [editingTodo])
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
 
     if (!title.trim()) return
+
+    if (editingTodo) {
+      onUpdate({
+        ...editingTodo,
+        title: title.trim(),
+        description: description.trim(),
+        dueDate,
+        priority,
+      })
+      return
+    }
 
     onAdd(
       createTodo({
@@ -40,84 +71,61 @@ export default function TodoForm({ onAdd }: TodoFormProps) {
         priority,
       }),
     )
-
-    setTitle('')
-    setDescription('')
-    setPriority('medium')
-    setDueDate(getDefaultDateTime())
   }
 
   return (
     <form
       onSubmit={handleSubmit}
-      className='space-y-4 rounded-xl border border-[#586e75] bg-[#073642] p-6 shadow-lg'>
-      <div>
-        <label className='mb-2 block text-sm font-semibold text-[#93a1a1]'>
-          Título
-        </label>
+      className='space-y-5 rounded-xl border border-border bg-surface p-6 text-foreground'>
+      <h2 className='text-heading text-xl font-bold'>
+        {editingTodo ? 'Editar tarea' : 'Nueva tarea'}
+      </h2>
 
-        <input
-          type='text'
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder='Nueva tarea...'
-          required
-          className='w-full rounded-lg border border-[#586e75] bg-[#002b36] px-4 py-3 text-[#eee8d5] outline-none transition focus:border-[#268bd2]'
-        />
-      </div>
+      <input
+        className='w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground outline-none focus:border-primary'
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        placeholder='Título'
+      />
 
-      <div>
-        <label className='mb-2 block text-sm font-semibold text-[#93a1a1]'>
-          Descripción
-        </label>
+      <textarea
+        className='w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground outline-none focus:border-primary'
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        placeholder='Descripción'
+      />
 
-        <textarea
-          rows={3}
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder='Descripción opcional...'
-          className='w-full resize-none rounded-lg border border-[#586e75] bg-[#002b36] px-4 py-3 text-[#eee8d5] outline-none transition focus:border-[#268bd2]'
-        />
-      </div>
+      <input
+        type='datetime-local'
+        className='w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground outline-none focus:border-primary'
+        value={dueDate}
+        onChange={(e) => setDueDate(e.target.value)}
+      />
 
-      <div className='grid gap-4 md:grid-cols-2'>
-        <div>
-          <label className='mb-2 block text-sm font-semibold text-[#93a1a1]'>
-            Fecha y hora
-          </label>
+      <select
+        className='w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground outline-none focus:border-primary'
+        value={priority ?? 'medium'}
+        onChange={(e) => setPriority(e.target.value as TodoPriority)}>
+        <option value='low'>Baja</option>
+        <option value='medium'>Media</option>
+        <option value='high'>Alta</option>
+      </select>
 
-          <input
-            type='datetime-local'
-            value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
-            required
-            className='w-full rounded-lg border border-[#586e75] bg-[#002b36] px-4 py-3 text-[#eee8d5] outline-none transition focus:border-[#268bd2]'
-          />
-        </div>
+      <Button
+        variant='primary'
+        className='w-full rounded-lg bg-secondary px-4 py-3 font-semibold text-text hover:opacity-90'>
+        {editingTodo ? 'Guardar cambios' : 'Agregar tarea'}
+      </Button>
 
-        <div>
-          <label className='mb-2 block text-sm font-semibold text-[#93a1a1]'>
-            Prioridad
-          </label>
-
-          <select
-            value={priority}
-            onChange={(e) =>
-              setPriority(e.target.value as 'low' | 'medium' | 'high')
-            }
-            className='w-full rounded-lg border border-[#586e75] bg-[#002b36] px-4 py-3 text-[#eee8d5] outline-none transition focus:border-[#268bd2]'>
-            <option value='low'>Baja</option>
-            <option value='medium'>Media</option>
-            <option value='high'>Alta</option>
-          </select>
-        </div>
-      </div>
-
-      <button
-        type='submit'
-        className='w-full rounded-lg bg-[#268bd2] px-5 py-3 font-semibold text-white transition hover:bg-[#2aa198]'>
-        Agregar tarea
-      </button>
+      {editingTodo && (
+        <Button
+          variant='primary'
+          type='button'
+          onClick={onCancelEdit}
+          className='w-full rounded-lg bg-secondary px-4 py-3 font-semibold text-text'>
+          Cancelar
+        </Button>
+      )}
     </form>
   )
 }
