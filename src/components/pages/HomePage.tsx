@@ -20,7 +20,7 @@ export default function HomePage() {
           <HeaderApi
             title='API Kapelu'
             italic
-            url='https://github.com/Kapelu/api_collection/blob/main/src/components/pages/HomePage.tsx'
+            url='https://github.com/Kapelu/api-collection/blob/main/src/components/pages/HomePage.tsx'
           />
           <HomeContent />
         </div>

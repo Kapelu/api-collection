@@ -21,7 +21,7 @@ export default async function SimpsonsPage() {
       <section className='mx-auto max-w-4xl py-16'>
         <HeaderApi
           image='/images/simpson/logo.webp'
-          url='https://github.com/Kapelu/api_collection/blob/main/src/components/pages/SimpsonPage.tsx'
+          url='https://github.com/Kapelu/api-collection/blob/main/src/components/pages/SimpsonPage.tsx'
           alt='Los Simpson'
         />
 
