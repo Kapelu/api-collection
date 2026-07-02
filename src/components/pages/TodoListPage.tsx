@@ -112,7 +112,7 @@ export default function TodoListPage() {
         <div className='mx-auto max-w-5xl space-y-8 rounded-2xl border border-border bg-surface/40 p-6 shadow-lg backdrop-blur-xl'>
           <HeaderApi
             title='ToDo List'
-            url='https://github.com/Kapelu/api_collection/blob/main/src/components/pages/TodoListPage.tsx'
+            url='https://github.com/Kapelu/api-collection/blob/main/src/components/pages/TodoListPage.tsx'
           />
 
           <TodoForm
