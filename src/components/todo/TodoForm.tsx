@@ -60,6 +60,7 @@ export default function TodoForm({
         dueDate,
         priority,
       })
+
       return
     }
 
@@ -71,6 +72,15 @@ export default function TodoForm({
         priority,
       }),
     )
+
+    function resetForm() {
+      setTitle('')
+      setDescription('')
+      setPriority('medium')
+      setDueDate(getDefaultDateTime())
+    }
+    resetForm()
+
   }
 
   return (

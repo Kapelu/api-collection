@@ -6,6 +6,7 @@ type HeroProps = {
   imageDark: `/${string}`
   alt?: string
   lightOpacity?: number
+  darkOpacity?: number
   className?: string
   variant?: 'default' | 'fixed'
 }
@@ -15,6 +16,7 @@ export default function Hero({
   imageDark,
   alt = '',
   lightOpacity,
+  darkOpacity,
   className,
   variant = 'default',
 }: HeroProps) {
@@ -30,7 +32,7 @@ export default function Hero({
         src={imageLight}
         alt={alt}
         fill
-        sizes="100dvw"
+        sizes='100dvw'
         priority
         style={{ opacity: lightOpacity ?? 0.3 }}
         className='object-cover dark:hidden'
@@ -41,9 +43,10 @@ export default function Hero({
         src={imageDark}
         alt={alt}
         fill
-        sizes="100dvw"
+        sizes='100dvw'
         priority
-        className='hidden object-cover opacity-50 dark:block'
+        style={{ opacity: darkOpacity ?? 0.3 }}
+        className='hidden object-cover dark:block'
       />
 
       <div className='absolute inset-0 bg-black/10' />

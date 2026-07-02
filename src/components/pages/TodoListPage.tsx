@@ -1,14 +1,10 @@
 'use client'
-
 import { useState } from 'react'
-
 import { Container } from '@/components/layout/Container'
 import HeaderApi from '../layout/HeaderApi'
 import Hero from '../layout/Hero'
-
 import TodoForm from '@/components/todo/TodoForm'
 import TodoList from '@/components/todo/TodoList'
-
 import { Todo } from '@/data/todo'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 
@@ -105,9 +101,10 @@ export default function TodoListPage() {
     <Container>
       <Hero
         imageLight='/images/bg-light.svg'
-        imageDark='/images/bg-dark.svg'
+        imageDark='/images/bg-light.svg'
         alt='Hero background space'
         lightOpacity={0.6}
+        darkOpacity={0.5}
         variant='fixed'
       />
 
